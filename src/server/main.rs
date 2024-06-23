@@ -1,5 +1,7 @@
 use std::{
-    env, io::{self, Read, Write}, net
+    env,
+    io::{self, Read, Write},
+    net,
 };
 
 fn handle_connection(
@@ -10,7 +12,6 @@ fn handle_connection(
 
     while echo_stream.read(&mut buf).is_ok() {
         let size = echo_stream.write(&buf)?;
-
 
         output_stream.write(b"[CLIENT] ")?;
         output_stream.write(&buf)?;
@@ -30,6 +31,8 @@ fn main() -> std::io::Result<()> {
 
     let ip = net::Ipv4Addr::new(127, 0, 0, 1);
     let addr = net::SocketAddrV4::new(ip, flag);
+
+    println!("listening on [::]:{}", flag);
 
     let listener = net::TcpListener::bind(addr)?;
 
