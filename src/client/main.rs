@@ -1,18 +1,30 @@
-use std::{io::{self, Read, Write}, net};
-fn main() -> std::io::Result<()> {
-    let mut connection = net::TcpStream::connect("127.0.0.1:42069")?;
+use std::{
+    env,
+    io::{self, Read, Write},
+    net,
+};
+fn main() -> io::Result<()> {
+    let flag = match env::args().nth(0) {
+        Some(data) => data.parse::<u16>().unwrap_or(42069),
+        None => 42069,
+    };
+
+    let ip = net::Ipv4Addr::new(127, 0, 0, 1);
+    let addr = net::SocketAddrV4::new(ip, flag);
+
+    let mut connection = net::TcpStream::connect(addr)?;
 
     let mut input_handle = io::stdin();
 
     let mut stdout_handle = io::stdout().lock();
 
     let mut buf = [0u8; 8192];
-    
+
     loop {
         stdout_handle.write(b"> ")?;
         stdout_handle.flush()?;
 
-        input_handle.read(&mut buf)?;
+        let size = input_handle.read(&mut buf)?;
 
         if buf.starts_with(b"quit") {
             println!("Exiting");
@@ -25,6 +37,8 @@ fn main() -> std::io::Result<()> {
 
         print!("[SERVER] ");
         stdout_handle.write(&buf)?;
+
+        buf[0..size].fill(0);
 
         connection.flush()?;
     }
