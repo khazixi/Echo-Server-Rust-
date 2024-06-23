@@ -12,7 +12,9 @@ fn handle_connection(
     while echo_stream.read(&mut buf).is_ok() {
         echo_stream.write(&buf)?;
 
+        output_stream.write(b"[CLIENT] ")?;
         output_stream.write(&buf)?;
+        output_stream.flush()?;
     }
 
     Ok(())
@@ -24,9 +26,7 @@ fn main() -> std::io::Result<()> {
     let mut stdout_handle = io::stdout().lock();
 
     for stream in listener.incoming() {
-        if handle_connection(&mut stream?, &mut stdout_handle).is_err() {
-            ();
-        };
+        if handle_connection(&mut stream?, &mut stdout_handle).is_err() {};
     }
 
     Ok(())
