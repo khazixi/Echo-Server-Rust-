@@ -9,15 +9,12 @@ fn handle_connection(
 ) -> io::Result<()> {
     let mut buf: [u8; 8192] = [0; 8192];
 
-    loop {
-        echo_stream.read(&mut buf);
+    while echo_stream.read(&mut buf).is_ok() {
+        echo_stream.write(&buf)?;
 
-        // echo_stream.write(&buf);
-
-        output_stream.write(&buf);
-
-        echo_stream.flush();
+        output_stream.write(&buf)?;
     }
+
     Ok(())
 }
 
@@ -27,7 +24,9 @@ fn main() -> std::io::Result<()> {
     let mut stdout_handle = io::stdout().lock();
 
     for stream in listener.incoming() {
-        handle_connection(&mut stream?, &mut stdout_handle);
+        if handle_connection(&mut stream?, &mut stdout_handle).is_err() {
+            ();
+        };
     }
 
     Ok(())
