@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "echoserver"
+name = "echo_netowrking"
 version = "0.1.0"
