@@ -1,0 +1,14 @@
+[package]
+name = "echo_netowrking"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "echo_server"
+path = "src/server/main.rs"
+
+[[bin]]
+name = "echo_client"
+path = "src/client/main.rs"
+
+[dependencies]
