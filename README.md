@@ -1,8 +1,8 @@
-# Echo Netowrking
+# Echo Networking
 
 Echo networking is a basic echo server and client in rust using
 synchronous IO. The server reads bytes from the client application
-and writes those same bytes to the application. 
+and writes those same bytes to the client. 
 
 ## Limitations
 
@@ -23,6 +23,14 @@ $ cargo run --bin echo_server --release 3000
 listening on [::]:3000
 ```
 
+You can call the server without a port in the arguments. The
+default server port is 42069
+
+```console
+$ cargo run --bin echo_server --release
+listening on [::]:42069
+```
+
 You can also build the executable which you can execute directly.
 ```console
 $ cargo build --bin echo_server --release
@@ -36,14 +44,34 @@ You can run the client using cargo using the following command.
 
 ```console
 $ cargo run --bin echo_client --release 3000
-listening on [::]:3000
+> 
+```
+
+You can call the client without a port in the arguments.
+The default connection port is 42069.
+
+```console
+$ cargo run --bin echo_client --release
+> 
+```
+
+You can type "quit" to exit stop the client. You can type any
+other message to send the message to the server.
+
+```console
+> hello
+[SERVER] hello
+> quit
+Exiting
 ```
 
 You can also build the executable which you can execute directly.
+
 ```console
 $ cargo build --bin echo_client --release
 $ find . -name echo_client
 ./target/release/echo_client
+> 
 ```
 
 ## License
