@@ -1,23 +1,27 @@
 use std::{
     env,
     io::{self, Read, Write},
-    net,
+    net, thread,
 };
 
 fn handle_connection(
-    echo_stream: &mut net::TcpStream,
-    output_stream: &mut io::StdoutLock,
+    mut echo_stream: net::TcpStream,
 ) -> io::Result<()> {
     let mut buf: [u8; 8192] = [0; 8192];
 
-    while echo_stream.read(&mut buf).is_ok() {
-        let size = echo_stream.write(&buf)?;
+    while let Ok(size) = echo_stream.read(&mut buf) {
+        echo_stream.write(&buf)?;
 
-        output_stream.write(b"[CLIENT] ")?;
-        output_stream.write(&buf)?;
-        output_stream.flush()?;
+        println!("[BYTES] {}", size);
 
-        buf[0..size].fill(0);
+        let s = String::from_utf8(buf[0..size].to_vec());
+        match s {
+            Ok(stringg) if stringg.len() == 0 => (),
+            Ok(stringg) => print!("[CLIENT] {}", stringg),
+            Err(_) => println!("[ERROR] Invalid UTF-8 String")
+        }
+
+        buf.fill(0);
     }
 
     Ok(())
@@ -36,10 +40,10 @@ fn main() -> std::io::Result<()> {
 
     let listener = net::TcpListener::bind(addr)?;
 
-    let mut stdout_handle = io::stdout().lock();
-
     for stream in listener.incoming() {
-        if handle_connection(&mut stream?, &mut stdout_handle).is_err() {};
+        if let Ok(good_stream) = stream {
+            thread::spawn(move || handle_connection(good_stream));
+        };
     }
 
     Ok(())

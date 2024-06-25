@@ -26,12 +26,14 @@ fn main() -> io::Result<()> {
 
         let size = input_handle.read(&mut buf)?;
 
+        println!("[BYTES] {}", size);
+
         if buf.starts_with(b"quit") {
             println!("Exiting");
             break;
         }
 
-        connection.write(&buf)?;
+        connection.write(&buf[0..size])?;
 
         connection.read(&mut buf)?;
 
